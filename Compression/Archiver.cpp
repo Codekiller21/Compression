@@ -41,7 +41,7 @@ void Archiver::Archive::archive() {
                 .fileType = File,
                 .fileSize = file_size(root)
         };
-        strcpy(he.archive.fileName, root.filename().string().c_str());
+        strcpy_s(he.archive.fileName, sizeof(he.archive.fileName), root.filename().string().c_str());
         output->write(he.bytes, sizeof(he));
 
         readFile(root.string());
@@ -63,7 +63,7 @@ void Archiver::Archive::dirRecur(const path& root) {
                     .fileType = File,
                     .fileSize = file_size(p)
             };
-            strcpy(he.archive.fileName, p.filename().string().c_str());
+            strcpy_s(he.archive.fileName, sizeof(he.archive.fileName), p.filename().string().c_str());
             output->write(he.bytes, sizeof(he));
 
             readFile(p.string());
@@ -75,7 +75,7 @@ void Archiver::Archive::dirRecur(const path& root) {
             he.archive = {
                     .fileType = StartDir
             };
-            strcpy(he.archive.fileName, p.filename().string().c_str());
+            strcpy_s(he.archive.fileName, sizeof(he.archive.fileName), p.filename().string().c_str());
             output->write(he.bytes, sizeof(he));
 
             dirRecur(p);

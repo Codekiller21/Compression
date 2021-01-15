@@ -4,16 +4,16 @@
 
 #include "FileStreams.h"
 
-#define DEFAULT_BUFFER_SIZE 4096
+#define DEFAULT_READER_BUFFER_SIZE 4096
+#define DEFAULT_WRITER_BUFFER_SIZE 32768
 
 FileStreams::BufferedFileReader::BufferedFileReader(const char* filename) {
-    fp = fopen(filename, "rb");
-    if (!fp) {
+    if (fopen_s(&fp, filename, "rb") != 0) {
         fp = nullptr;
         return;
     }
-    buf = new char[DEFAULT_BUFFER_SIZE];
-    if (setvbuf(fp, buf, _IOFBF, DEFAULT_BUFFER_SIZE) != 0) {
+    buf = new char[DEFAULT_READER_BUFFER_SIZE];
+    if (setvbuf(fp, buf, _IOFBF, DEFAULT_READER_BUFFER_SIZE) != 0) {
         fclose(fp);
         fp = nullptr;
         delete[] buf;
@@ -41,16 +41,16 @@ int FileStreams::BufferedFileReader::get() {
 }
 
 bool FileStreams::BufferedFileReader::operator!() {
-    return !fp;
+    return fp == nullptr;
 }
 
 FileStreams::BufferedFileWriter::BufferedFileWriter(const char* filename) {
-    fp = fopen(filename, "wb");
-    if (!fp) {
+    if (fopen_s(&fp, filename, "wb") != 0) {
         fp = nullptr;
+        return;
     }
-    buf = new char[DEFAULT_BUFFER_SIZE];
-    if (setvbuf(fp, buf, _IOFBF, DEFAULT_BUFFER_SIZE) != 0) {
+    buf = new char[DEFAULT_WRITER_BUFFER_SIZE];
+    if (setvbuf(fp, buf, _IOFBF, DEFAULT_WRITER_BUFFER_SIZE) != 0) {
         fclose(fp);
         fp = nullptr;
         delete[] buf;
@@ -82,5 +82,5 @@ void FileStreams::BufferedFileWriter::flush() {
 }
 
 bool FileStreams::BufferedFileWriter::operator!() {
-    return !fp;
+    return fp == nullptr;
 }
